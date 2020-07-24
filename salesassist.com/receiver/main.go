@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,9 +10,29 @@ import (
 	"net/http"
 	"strings"
 
+	"cloud.google.com/go/pubsub"
 	"github.com/golang/gddo/httputil/header"
 	"github.com/gorilla/mux"
 )
+
+var projectID string
+var topicID string
+var client *pubsub.Client
+var ctx context.Context
+
+func init() {
+	var err error
+	projectID = "cool-ml-demos"
+	topicID = "sales-assist"
+	ctx = context.Background()
+
+	client, err = pubsub.NewClient(ctx, projectID)
+	if err != nil {
+		log.Printf("pubsub.NewClient: %v", err)
+		return
+	}
+
+}
 
 type malformedRequest struct {
 	status int
@@ -81,13 +102,10 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 	return nil
 }
 
+// Payload of the JSON structure
 type Payload struct {
-	Phrase    string
-	MeetingID string
-}
-
-func printPayload(p *Payload) {
-	fmt.Println(p.Phrase)
+	Phrase    string `json:"phrase"`
+	MeetingID string `json:"meetingID"`
 }
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
@@ -105,12 +123,32 @@ func payloadCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	printPayload(&p)
-	fmt.Fprintf(w, "Payload: %+v", p)
+	msg := &Payload{Phrase: p.Phrase, MeetingID: p.MeetingID}
+	msgByte, err := json.Marshal(msg)
+	publish(msgByte)
+
+	fmt.Fprintf(w, "ok")
+}
+
+func publish(msg []byte) error {
+
+	t := client.Topic(topicID)
+	result := t.Publish(ctx, &pubsub.Message{
+		Data: []byte(msg),
+	})
+	// Block until the result is returned and a server-generated
+	// ID is returned for the published message.
+	id, err := result.Get(ctx)
+
+	if err != nil {
+		log.Println(err, id)
+		return err
+	}
+	log.Println(id)
+	return nil
 }
 
 func main() {
-
 	r := mux.NewRouter()
 	api := r.PathPrefix("/receiver/v1").Subrouter()
 	api.HandleFunc("", payloadCreate).Methods(http.MethodPost)
