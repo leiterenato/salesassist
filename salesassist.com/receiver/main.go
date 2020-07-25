@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"cloud.google.com/go/pubsub"
@@ -22,8 +23,8 @@ var ctx context.Context
 
 func init() {
 	var err error
-	projectID = "cool-ml-demos"
-	topicID = "sales-assist"
+	projectID = os.Getenv("PROJECTID")
+	topicID = os.Getenv("TOPICID")
 	ctx = context.Background()
 
 	client, err = pubsub.NewClient(ctx, projectID)
@@ -130,6 +131,7 @@ func payloadCreate(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "ok")
 }
 
+// Implement Concurrency
 func publish(msg []byte) error {
 
 	t := client.Topic(topicID)
@@ -149,11 +151,16 @@ func publish(msg []byte) error {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	r := mux.NewRouter()
 	api := r.PathPrefix("/receiver/v1").Subrouter()
 	api.HandleFunc("", payloadCreate).Methods(http.MethodPost)
 
-	log.Println("Starting server on :8080...")
-	err := http.ListenAndServe(":8080", r)
+	log.Printf("Starting server on port: %s ...", port)
+	err := http.ListenAndServe(fmt.Sprintf(":%s", port), r)
 	log.Fatal(err)
 }

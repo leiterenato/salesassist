@@ -19,8 +19,6 @@ COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -mod=readonly -v -o server
 
 # Use the official Alpine image for a lean production container.
-# https://hub.docker.com/_/alpine
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
 FROM alpine:3
 RUN apk add --no-cache ca-certificates
 
