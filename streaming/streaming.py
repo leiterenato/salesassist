@@ -3,23 +3,42 @@ from __future__ import absolute_import
 import argparse
 import logging
 import json
+import time
 
 from past.builtins import unicode
 
 import apache_beam as beam
-import apache_beam.transforms.window as window
+from apache_beam.io import fileio
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import SetupOptions
 from apache_beam.options.pipeline_options import StandardOptions
+from apache_beam.options.pipeline_options import GoogleCloudOptions
 
-def run(save_main_session=True):
+
+def run(argv=None, save_main_session=True):
     """Build and run the pipeline."""
 
-    input_subscription = 'projects/cool-ml-demos/subscriptions/sales-assist-subscription'
+    parser = argparse.ArgumentParser(prog='Assist Streaming')
+    parser.add_argument(
+        '--input_subscription',
+        dest='input_subscription',
+        default='projects/cool-ml-demos/subscriptions/sales-assist-subscription',
+        help='Input Subscription')
+    parser.add_argument(
+        '--output_bigquery',
+        dest='output_bigquery',
+        default='cool-ml-demos:salesassist.history',
+        help='Output Table in BigQuery.')
+    parser.add_argument(
+        '--output_bucket',
+        dest='output_bucket',
+        default='gs://salesassist-history/archive',
+        help='Output file to write results to.')
+    known_args, pipeline_args = parser.parse_known_args(argv)
 
     # We use the save_main_session option because one or more DoFn's in this
     # workflow rely on global context (e.g., a module imported at module level).
-    pipeline_options = PipelineOptions()
+    pipeline_options = PipelineOptions(pipeline_args)
     pipeline_options.view_as(SetupOptions).save_main_session = save_main_session
     pipeline_options.view_as(StandardOptions).streaming = True
 
@@ -27,37 +46,37 @@ def run(save_main_session=True):
         # Read from PubSub into a PCollection.
         messages = (
             p
-            | 'Read from PubSub' >> beam.io.ReadFromPubSub(subscription=input_subscription).
-            with_output_types(bytes))
+             | 'Read from PubSub' >> 
+                    beam.io.ReadFromPubSub(subscription=known_args.input_subscription)
+                        .with_output_types(bytes)
+             | 'JSONParse' >> beam.Map(json.loads))
 
-        lines = messages | 'JSONParse' >> beam.Map(lambda x: json.loads(x))
-        
+        (messages | 'Write to BigQuery' >> beam.io.WriteToBigQuery(
+                        known_args.output_bigquery,
+                        write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND))
 
-        counts = (
-            lines
-            | 'split' >>
-            (beam.ParDo(WordExtractingDoFn()).with_output_types(unicode))
-            | 'pair_with_one' >> beam.Map(lambda x: (x, 1))
-            | beam.WindowInto(window.FixedWindows(15, 0))
-            | 'group' >> beam.GroupByKey()
-            | 'count' >> beam.Map(count_ones))
+        windowed_payload = (messages | 
+                            'Window' >> beam.WindowInto(beam.window.FixedWindows(30)))
 
-    # Format the counts into a PCollection of strings.
-    def format_result(word_count):
-      (word, count) = word_count
-      return '%s: %d' % (word, count)
+        (windowed_payload | 'JSONify' >> beam.Map(json.dumps)
+                          | 'Write to Bucket' >> fileio.WriteToFiles(
+                                path=known_args.output_bucket,
+                                destination=lambda record: json.loads(record)['meetingid'],
+                                sink=lambda dest: JsonSink(),
+                                file_naming=payload_naming))
 
-    output = (
-        counts
-        | 'format' >> beam.Map(format_result)
-        | 'encode' >>
-        beam.Map(lambda x: x.encode('utf-8')).with_output_types(bytes))
 
-    # Write to PubSub.
-    # pylint: disable=expression-not-assigned
-    output | beam.io.WriteToPubSub(known_args.output_topic)
+class JsonSink(fileio.TextSink):
+    def write(self, record):
+        self._fh.write(json.dumps(record).encode('utf8'))
+        self._fh.write('\n'.encode('utf8'))
+
+
+def payload_naming(*args):
+    file_name = fileio.destination_prefix_naming()(*args)
+    return '{}.json'.format(file_name)
 
 
 if __name__ == '__main__':
-  logging.getLogger().setLevel(logging.INFO)
-  run()
+    logging.getLogger().setLevel(logging.INFO)
+    run()

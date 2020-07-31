@@ -106,7 +106,7 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 // Payload of the JSON structure
 type Payload struct {
 	Phrase    string `json:"phrase"`
-	MeetingID string `json:"meetingID"`
+	MeetingID string `json:"meetingid"`
 }
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
