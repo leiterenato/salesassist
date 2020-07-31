@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "/Users/renatoleite/.venv/tf_22_poc/bin/python",
+    "python.pythonPath": "/Users/renatoleite/.venv/salesassist/bin/python",
     "python.linting.enabled": true
 }
