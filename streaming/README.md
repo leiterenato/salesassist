@@ -15,14 +15,34 @@ python streaming.py \
   --output_bigquery "cool-ml-demos:salesassist.history" \
   --output_bucket "gs://salesassist-history"
 
-## Local
-python streaming.py \
+## Local Streaming (PubSub to BigQuery)
+python streaming_bigquery.py \
   --streaming \
   --temp_location gs://salesassist-history/tmp/ \
   --input_subscription "projects/cool-ml-demos/subscriptions/sales-assist-subscription" \
-  --output_bigquery "cool-ml-demos:salesassist.history" \
-  --output_bucket "gs://salesassist-history"
+  --output_bigquery "cool-ml-demos:salesassist.history"
+
+## Local Batch (BigQuery to GCS)
+python streaming_storage.py \
+  --project cool-ml-demos \
+  --temp_location gs://salesassist-history/tmp/ 
 
 
-### Payload
-{"meetingid":"ccc-ddd-eee", "phrase":"xxxxx"}
+### Payload (tests)
+
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"aaa-bbb-ccc\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"aaa-bbb-ccc\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"aaa-bbb-ccc\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-21 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"aaa-bbb-ccc\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-21 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"aaa-bbb-ccc\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-21 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"aaa-bbb-ccc\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-24 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-20 12:44:31.744957 UTC\"}"
+
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-02 12:44:31.744957 UTC\"}"
+gcloud pubsub topics publish sales-assist --message="{\"meetingid\":\"ddd-eee-fff\", \"transcription\":\"oi\", \"timestamp_transcription\":\"2020-08-02 12:44:31.744957 UTC\"}"
