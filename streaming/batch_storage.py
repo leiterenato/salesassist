@@ -1,25 +1,16 @@
-from __future__ import absolute_import
-
 import argparse
 import logging
 import json
 import time
 import datetime
 
-from past.builtins import unicode
-
 import apache_beam as beam
 from apache_beam.io import fileio
 
 
 def run(argv=None, save_main_session=True):
-    """Build and run the pipeline."""
-
     parser = argparse.ArgumentParser(prog='Assist Archive')
     known_args, pipeline_args = parser.parse_known_args(argv)
-
-    # We use the save_main_session option because one or more DoFn's in this
-    # workflow rely on global context (e.g., a module imported at module level).
 
     query = 'SELECT * FROM `cool-ml-demos.salesassist.history` '\
             'WHERE EXTRACT(DATE FROM timestamp_transcription) = '\
@@ -32,10 +23,6 @@ def run(argv=None, save_main_session=True):
                                             query = query, use_standard_sql=True))
              | 'Get Key' >> beam.Map(lambda elem: (elem['meetingid'], elem))
              | 'Group by MeetingID' >> beam.GroupByKey()
-            #  | 'List of Grouped Elements' >> beam.MapTuple(lambda _, val: (list(val))
-            #  | 'Newline Delimited JSON' >> beam.ParDo(NewlineDelimitedJSON())
-            #  | 'Print Elements' >> beam.Map(lambda element: print(element[0], list(element[1])))
-            #  | 'Print Tuple' >> beam.ParDo(NewlineDelimitedJSON())
              | 'Write to Bucket' >> fileio.WriteToFiles(
                                         path='gs://salesassist-history',
                                         destination=lambda element: element[0],
