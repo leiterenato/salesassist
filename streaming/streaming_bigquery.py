@@ -5,12 +5,6 @@ import re
 
 import apache_beam as beam
 
-# Tests:
-# 1) Assert input equal expected output
-# 2) Empty input
-# 3) Input different than table_schema
-# 4) JSON parse fail
-# 5) Insert to BigQuery Fail
 
 # [TODO] 
 # - Use timepartitioning to write to BQ
@@ -102,12 +96,6 @@ class ParseJson(beam.DoFn):
             yield beam.pvalue.TaggedOutput('json_decode_error', error_message)
         else:
             yield element
-
-
-class PrintPayload(beam.DoFn):
-    def process(self, element):
-        print(element)
-        yield element
 
 
 if __name__ == '__main__':
