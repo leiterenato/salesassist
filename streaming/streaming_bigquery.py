@@ -92,7 +92,9 @@ class ParseJson(beam.DoFn):
                 meeting = meeting.group()
             else:
                 meeting = ''
-            error_message = {'meetingid':meeting, 'payload':str(element), 'error':e}
+            error_message = {'meetingid':meeting, 
+                            'payload':str(element), 
+                            'error':e.__class__.__name__ + ': ' + str(e)}
             yield beam.pvalue.TaggedOutput('json_decode_error', error_message)
         else:
             yield element
