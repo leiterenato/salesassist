@@ -30,7 +30,7 @@
         },
         {
             "entity":"ai_speech", 
-            "synonyms":["transcrição", "sintetização", "audio para texto", "texto para áudio"]
+            "synonyms":["transcrição", "sintetização", "áudio para texto", "texto para áudio", "áudio"]
         },
         {
             "entity":"ai_vision", 

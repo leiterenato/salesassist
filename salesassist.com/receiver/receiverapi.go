@@ -32,7 +32,6 @@ func init() {
 		log.Printf("pubsub.NewClient: %v", err)
 		return
 	}
-
 }
 
 type malformedRequest struct {
@@ -105,8 +104,11 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 
 // Payload of the JSON structure
 type Payload struct {
-	Phrase    string `json:"phrase"`
-	MeetingID string `json:"meetingid"`
+	MeetingID  string `json:"meetingid"`
+	Speaker    string `json:"phrase"`
+	Transcript string `json:"transcript"`
+	Start      string `json:"start"`
+	End        string `json:"end"`
 }
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
