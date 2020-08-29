@@ -1,0 +1,48 @@
+{
+    "entities": [
+        {
+            "entity":"ai_mldiscovery",
+            "synonyms":["machine learning","inteligência artificial","data science"]
+        }, 
+        {
+            "entity":"ai_ccai", 
+            "synonyms":["contact center","atendimento ao cliente","voice bot"]
+        },
+        {
+            "entity":"ai_dialogflow", 
+            "synonyms":["chatbot", "assistente", "dialogflow"]
+        },
+        {
+            "entity":"ai_documentai", 
+            "synonyms":["documentos", "formulários", "invoice", "ocr documentos"]
+        },
+        {
+            "entity":"ai_naturallanguage", 
+            "synonyms":["tradução", "linguagem", "sentimento", "entidade", "translate"]
+        },
+        {
+            "entity":"ai_mlops", 
+            "synonyms":["mlops", "produção", "operações"]
+        },
+        {
+            "entity":"ai_notebookspipeline", 
+            "synonyms":["jupyter", "notebook", "pipelines", "kubeflow"]
+        },
+        {
+            "entity":"ai_speech", 
+            "synonyms":["transcrição", "sintetização", "áudio para texto", "texto para áudio", "áudio"]
+        },
+        {
+            "entity":"ai_vision", 
+            "synonyms":["ocr",	"image", "video", "detecção de objetos"]
+        },
+        {
+            "entity":"ai_structured", 
+            "synonyms":["estruturados", "regressão", "recomendação"]
+        },
+        {
+            "entity":"ai_trainingserving", 
+            "synonyms":["gpu", "tpu", "servir modelo", "treinar modelo", "tensorflow"]
+        }
+    ]
+}
