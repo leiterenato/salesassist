@@ -10,7 +10,7 @@
         },
         {
             "entity":"ai_dialogflow", 
-            "synonyms":["chatbot", "assistente", "dialogflow"]
+            "synonyms":["chatbot", "assistente", "dialogflow", "bot"]
         },
         {
             "entity":"ai_documentai", 

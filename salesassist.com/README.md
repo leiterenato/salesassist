@@ -19,3 +19,7 @@
         "content":"bla bla bla"
     }]
 }
+
+##### Or ...
+
+{ "response": null}

@@ -145,7 +145,7 @@ func main() {
 	var h History
 	filename := "dictionary.json"
 	var entities Entities
-	p := Payload{"abc-defg-hij", "GOOGLER", "machine learning, e chatbot", "2020-08-22 13:45:00", "2020-08-22 13:45:00"}
+	p := Payload{"abc-defg-hij", "GOOGLER", "Gosto muito de GCP", "2020-08-22 13:45:00", "2020-08-22 13:45:00"}
 
 	entities.loadDictFromFile(filename)
 	match := p.findSynonyms(entities)

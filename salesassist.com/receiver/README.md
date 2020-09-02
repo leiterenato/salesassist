@@ -12,6 +12,7 @@ gcloud run services add-iam-policy-binding salesassist \
     --role="roles/run.invoker"
 
 #### Execute locally
-export PROJECTID="cool-ml-demos"
+export PROJECTIDDATA="cool-ml-demos"
+export PROJECTIDASSIST="salesassist-help"
 export TOPICID="sales-assist"
-go run main.go
+go run receiverapi.go

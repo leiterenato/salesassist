@@ -18,8 +18,10 @@ spec:
       containerConcurrency: 80
       containers:
       - env:
-        - name: PROJECTID
+        - name: PROJECTIDDATA
           value: cool-ml-demos
+        - name: PROJECTIDASSIST
+          value: salesassist-help
         - name: TOPICID
           value: sales-assist
         image: gcr.io/cool-ml-demos/salesassist-receiver:latest

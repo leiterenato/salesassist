@@ -21,7 +21,8 @@ import (
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
-var projectID string
+var projectIDdata string
+var projectIDassist string
 var topicID string
 var sessionID string
 var languageCode string
@@ -36,7 +37,8 @@ var dfCtx context.Context
 
 func init() {
 	var err error
-	projectID = os.Getenv("PROJECTID")
+	projectIDdata = os.Getenv("PROJECTIDDATA")
+	projectIDassist = os.Getenv("PROJECTIDASSIST")
 	topicID = os.Getenv("TOPICID")
 	sessionID = "salesassist"
 	languageCode = "pt-BR"
@@ -45,7 +47,7 @@ func init() {
 	pubsubCtx = context.Background()
 	dfCtx = context.Background()
 
-	pubsubClient, err = pubsub.NewClient(pubsubCtx, projectID)
+	pubsubClient, err = pubsub.NewClient(pubsubCtx, projectIDdata)
 	if err != nil {
 		log.Printf("pubsub.NewClient: %v", err)
 		return
@@ -93,7 +95,7 @@ func (e *Entities) loadDictFromFile(filePath string) {
 func detectIntentText(intents map[string]string) map[string]string {
 	intentResponse := make(map[string]string)
 
-	sessionPath := fmt.Sprintf("projects/%s/agent/sessions/%s", projectID, sessionID)
+	sessionPath := fmt.Sprintf("projects/%s/agent/sessions/%s", projectIDassist, sessionID)
 
 	for key := range intents {
 		textInput := dialogflowpb.TextInput{Text: key, LanguageCode: languageCode}
@@ -279,7 +281,7 @@ func payloadCreate(w http.ResponseWriter, r *http.Request) {
 	// Publish Message to Pubsub
 	publish(histBytes)
 
-	// Return same
+	// Return Response with match intents
 	fmt.Fprintf(w, string(respBytes))
 }
 
