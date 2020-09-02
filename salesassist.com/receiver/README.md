@@ -7,7 +7,7 @@ gcloud builds submit --tag gcr.io/cool-ml-demos/salesassist-receiver
 gcloud beta run services replace service.yaml
 
 ### Step 3: Allow external access
-gcloud run services add-iam-policy-binding salesassist \
+gcloud run services add-iam-policy-binding receiver \
     --member="allUsers" \
     --role="roles/run.invoker"
 
