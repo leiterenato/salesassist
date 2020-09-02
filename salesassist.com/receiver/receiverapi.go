@@ -23,20 +23,42 @@ import (
 
 var projectID string
 var topicID string
+var sessionID string
+var languageCode string
+var filename string
+
+var entities Entities
+
 var pubsubClient *pubsub.Client
-var ctx context.Context
+var pubsubCtx context.Context
+var dfSessionClient *dialogflow.SessionsClient
+var dfCtx context.Context
 
 func init() {
 	var err error
 	projectID = os.Getenv("PROJECTID")
 	topicID = os.Getenv("TOPICID")
-	ctx = context.Background()
+	sessionID = "salesassist"
+	languageCode = "pt-BR"
+	filename := "dictionary.json"
 
-	pubsubClient, err = pubsub.NewClient(ctx, projectID)
+	pubsubCtx = context.Background()
+	dfCtx = context.Background()
+
+	pubsubClient, err = pubsub.NewClient(pubsubCtx, projectID)
 	if err != nil {
 		log.Printf("pubsub.NewClient: %v", err)
 		return
 	}
+
+	dfSessionClient, err = dialogflow.NewSessionsClient(dfCtx)
+	if err != nil {
+		log.Printf("dialogflow.NewSessionClient: %v", err)
+		return
+	}
+
+	entities.loadDictFromFile(filename)
+
 }
 
 // Entities for query reference
@@ -68,19 +90,8 @@ func (e *Entities) loadDictFromFile(filePath string) {
 
 }
 
-func detectIntentText(projectID string, sessionID string, intents map[string]string, languageCode string) map[string]string {
+func detectIntentText(intents map[string]string) map[string]string {
 	intentResponse := make(map[string]string)
-	ctx := context.Background()
-
-	sessionClient, err := dialogflow.NewSessionsClient(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer sessionClient.Close()
-
-	if projectID == "" || sessionID == "" {
-		fmt.Println(projectID, sessionID)
-	}
 
 	sessionPath := fmt.Sprintf("projects/%s/agent/sessions/%s", projectID, sessionID)
 
@@ -90,7 +101,7 @@ func detectIntentText(projectID string, sessionID string, intents map[string]str
 		queryInput := dialogflowpb.QueryInput{Input: &queryTextInput}
 		request := dialogflowpb.DetectIntentRequest{Session: sessionPath, QueryInput: &queryInput}
 
-		response, err := sessionClient.DetectIntent(ctx, &request)
+		response, err := dfSessionClient.DetectIntent(dfCtx, &request)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -175,7 +186,7 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 // Payload of the JSON structure
 type Payload struct {
 	MeetingID  string `json:"meetingid"`
-	Speaker    string `json:"phrase"`
+	Speaker    string `json:"speaker"`
 	Transcript string `json:"transcript"`
 	Start      string `json:"start"`
 	End        string `json:"end"`
@@ -218,7 +229,7 @@ func (resp *Responses) buildResponseContent(intentResponses map[string]string) {
 // History to be published
 type History struct {
 	MeetingID  string            `json:"meetingid"`
-	Speaker    string            `json:"phrase"`
+	Speaker    string            `json:"speaker"`
 	Transcript string            `json:"transcript"`
 	Start      string            `json:"start"`
 	End        string            `json:"end"`
@@ -236,6 +247,8 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
 	var p Payload
+	var resp Responses
+	var h History
 
 	err := decodeJSONBody(w, r, &p)
 	if err != nil {
@@ -249,22 +262,36 @@ func payloadCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msg := &Payload{Transcript: p.Transcript, MeetingID: p.MeetingID}
-	msgByte, err := json.Marshal(msg)
-	publish(msgByte)
+	// Search for keywords
+	match := p.findSynonyms(entities)
 
-	fmt.Fprintf(w, "ok")
+	// Query Dialogflow for intents
+	intentDetected := detectIntentText(match)
+
+	// Build response
+	resp.buildResponseContent(intentDetected)
+	respBytes, _ := json.Marshal(resp)
+
+	// Emsamble Payload and Response
+	h.buildHistoryContent(&p, &resp)
+	histBytes, _ := json.Marshal(h)
+
+	// Publish Message to Pubsub
+	publish(histBytes)
+
+	// Return same
+	fmt.Fprintf(w, string(respBytes))
 }
 
 func publish(msg []byte) error {
 
 	t := pubsubClient.Topic(topicID)
-	result := t.Publish(ctx, &pubsub.Message{
+	result := t.Publish(pubsubCtx, &pubsub.Message{
 		Data: []byte(msg),
 	})
 	// Block until the result is returned and a server-generated
 	// ID is returned for the published message.
-	id, err := result.Get(ctx)
+	id, err := result.Get(pubsubCtx)
 
 	if err != nil {
 		log.Println(err, id)
