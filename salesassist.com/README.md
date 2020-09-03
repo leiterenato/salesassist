@@ -1,9 +1,4 @@
-### From Speech API:
- - speaker: {TITLE | GOOGLER | CLIENT}
- - meetingid: 
- - transcript:
- - start:
- - end:
+### Request
 
 {"meetingID":"xxx-xxxx-xxx", "speaker": "GOOGLER", "transcript": "xxxxxxxx", "start": "2020-08-22 13:45:00", "end": "2020-08-22 13:45:00"} 
 

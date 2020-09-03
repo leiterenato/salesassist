@@ -16,3 +16,16 @@ export PROJECTIDDATA="cool-ml-demos"
 export PROJECTIDASSIST="salesassist-help"
 export TOPICID="sales-assist"
 go run receiverapi.go
+
+PORT=8080 && docker run \
+-p 9090:${PORT} \
+-e PORT=${PORT} \
+-e K_SERVICE=dev \
+-e PROJECTIDDATA=cool-ml-demos \
+-e PROJECTIDASSIST=salesassist-help \
+-e TOPICID=sales-assist \
+-e K_CONFIGURATION=dev \
+-e K_REVISION=dev-00001 \
+-e GOOGLE_APPLICATION_CREDENTIALS=/Users/renatoleite/Documents/google-cloud-sdk/cool-ml-demos-80c3372293d6.json \
+-v $GOOGLE_APPLICATION_CREDENTIALS:/Users/renatoleite/Documents/google-cloud-sdk/cool-ml-demos-80c3372293d6.json:ro \
+gcr.io/cool-ml-demos/salesassist-receiver
