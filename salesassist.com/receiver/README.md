@@ -4,7 +4,7 @@
 gcloud builds submit --tag gcr.io/cool-ml-demos/salesassist-receiver
 
 ### Step 2: Deploy to Cloud Run using YAML file
-gcloud beta run services replace service.yaml
+gcloud beta run services replace service.yaml --platform managed
 
 ### Step 3: Allow external access
 gcloud run services add-iam-policy-binding receiver \

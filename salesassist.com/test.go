@@ -141,21 +141,28 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 
 func main() {
 
+	// var resp Responses
+	// var h History
+	// filename := "dictionary.json"
+	// var entities Entities
+	// p := Payload{"abc-defg-hij", "GOOGLER", "Gosto muito de GCP", "2020-08-22 13:45:00", "2020-08-22 13:45:00"}
+
+	// entities.loadDictFromFile(filename)
+	// match := p.findSynonyms(entities)
+
+	// teste := detectIntentText("salesassist-help", "renato-legal", match, "pt-BR")
+
+	// resp.buildResponseContent(teste)
+	// // fmt.Println(resp)
+
+	// h.buildHistoryContent(&p, &resp)
+	// renato, _ := json.Marshal(h)
+	// fmt.Println(string(renato))
+
 	var resp Responses
-	var h History
-	filename := "dictionary.json"
-	var entities Entities
-	p := Payload{"abc-defg-hij", "GOOGLER", "Gosto muito de GCP", "2020-08-22 13:45:00", "2020-08-22 13:45:00"}
-
-	entities.loadDictFromFile(filename)
-	match := p.findSynonyms(entities)
-
-	teste := detectIntentText("salesassist-help", "renato-legal", match, "pt-BR")
-
-	resp.buildResponseContent(teste)
-	// fmt.Println(resp)
-
-	h.buildHistoryContent(&p, &resp)
-	renato, _ := json.Marshal(h)
-	fmt.Println(string(renato))
+	resp.Responses = append(resp.Responses, ResponseContent{Title: "", Content: ""})
+	resp.Responses = append(resp.Responses, ResponseContent{Title: "", Content: ""})
+	resp.Responses = nil
+	fmt.Println(resp)
+	fmt.Printf("len=%d", len(resp.Responses))
 }

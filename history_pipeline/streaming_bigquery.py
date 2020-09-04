@@ -51,14 +51,17 @@ def run_pipeline(known_args, pipeline_args):
 
 class TablesProperties:
     table_schema = {
-        'fields': [{
-            'name': 'meetingid', 'type': 'STRING', 'mode': 'REQUIRED'
-        }, {
-            'name': 'timestamp_transcription', 'type': 'TIMESTAMP', 'mode': 'REQUIRED'
-        }, {
-            'name': 'transcription', 'type': 'STRING', 'mode': 'REQUIRED'
-        }]
-    }
+        'fields': [
+            {'name': 'meetingid', 'type': 'STRING', 'mode': 'REQUIRED'},
+            {'name': 'speaker', 'type': 'STRING', 'mode': 'REQUIRED'},
+            {'name': 'transcript', 'type': 'STRING', 'mode': 'REQUIRED'},
+            {'name': 'start', 'type': 'DATETIME', 'mode': 'REQUIRED'},
+            {'name': 'end', 'type': 'DATETIME', 'mode': 'REQUIRED'},
+            {'name': 'response', 'type': 'RECORD', 'mode': 'REPEATED',
+                'fields': [{'name': 'title', 'type': 'STRING', 'mode': 'NULLABLE'},
+                        {'name': 'content', 'type': 'STRING', 'mode': 'NULLABLE'}]}
+            ]
+        }
 
     error_schema = {
         'fields': [{

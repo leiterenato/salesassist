@@ -13,7 +13,7 @@ def run(argv=None, save_main_session=True):
     known_args, pipeline_args = parser.parse_known_args(argv)
 
     query = 'SELECT * FROM `cool-ml-demos.salesassist.history` '\
-            'WHERE EXTRACT(DATE FROM timestamp_transcription) = '\
+            'WHERE EXTRACT(DATE FROM start) > '\
             'EXTRACT(DATE FROM TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY))'
 
     with beam.Pipeline(argv=pipeline_args) as p:

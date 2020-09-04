@@ -245,6 +245,12 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 	hist.Start = p.Start
 	hist.End = p.End
 	hist.Responses = resp.Responses
+
+	if len(resp.Responses) > 0 {
+		hist.Responses = resp.Responses
+	} else {
+		hist.Responses = append(hist.Responses, ResponseContent{Title: "", Content: ""})
+	}
 }
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
