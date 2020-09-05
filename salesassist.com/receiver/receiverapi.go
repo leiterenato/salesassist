@@ -287,6 +287,9 @@ func payloadCreate(w http.ResponseWriter, r *http.Request) {
 	// Publish Message to Pubsub
 	publish(histBytes)
 
+	// Enable CORS
+	enableCors(&w)
+
 	// Return Response with match intents
 	fmt.Fprintf(w, string(respBytes))
 }
@@ -307,6 +310,10 @@ func publish(msg []byte) error {
 	}
 	log.Println(id)
 	return nil
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func main() {
