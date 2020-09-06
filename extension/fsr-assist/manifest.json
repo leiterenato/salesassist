@@ -1,7 +1,7 @@
 {
-  "name": "FSR Assist",
-  "version": "0.0.1",
-  "description": "Assist for FSRs in meetings",
+  "name": "Sales Assist",
+  "version": "0.1.0",
+  "description": "Assist for Sales in meetings",
   "icons": {
     "16": "images/get_started16.png",
     "32": "images/get_started32.png",
@@ -12,6 +12,7 @@
   "content_scripts": [
     {
       "matches": ["https://meet.google.com/*"],
+      "exclude_matches": ["https://meet.google.com/", "https://meet.google.com/?*"],
       "js": ["assist.js"],
       "run_at": "document_idle"
     }

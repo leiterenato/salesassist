@@ -1,18 +1,21 @@
 class Recorder {
     // Speech API
     speechAPI = "https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyBK-_TTjhxiWNc7LEAb4K9whgUn2bnbGRQ"
-    salesAssistAPI = "https://receiver-ehbc3cwvsq-ue.a.run.app"
+    salesAssistAPI = "https://receiver-ehbc3cwvsq-ue.a.run.app/receiver/v1"
 
     // Audio Context for audio processing
     audioContext = new(window.AudioContext || window.webkitAudioContext)()
 
     
-    constructor(audioSrc, options, speaker, meetingID) {
+    constructor(audioSrc, options, speaker, meetingID, uiManager) {
         this.meetingID = meetingID
         this.speaker = speaker
         this.audioSrc = audioSrc
         this.options = options
+        this.uiManager = uiManager
         this.mediaRecorder = new MediaRecorder(this.audioSrc, this.options);
+
+        this.uiElement = this.uiManager.newSource(this.speaker)
 
         this.mediaRecorder.ondataavailable = e => {
             let start = this.start
@@ -160,7 +163,7 @@ class Recorder {
 
     recorderStop() {
         if (this.mediaRecorder.state != "inactive") {
-            this.start = this.recorderStart
+            this.start = this.recordStart
             this.end = new Date().toISOString().replace("Z","")
             this.mediaRecorder.stop();
         }
@@ -185,7 +188,7 @@ class Recorder {
             }
         };
         Recorder.blobToBase64(blob).then(res => {
-            console.log(res)
+            if(res.split("A").length < 370000){
             xmlhttp.send(JSON.stringify({
                 "config": {
                     "sampleRateHertz": 48000,
@@ -201,19 +204,28 @@ class Recorder {
                 "audio": {
                     "content": res.split(",")[1]
                 }
-        }));});
+        }));}});
 
     }
 
     callSalesAssistAPI(responseText, start, end) {
         var responseObj = JSON.parse(responseText);
+        let self = this
         if (responseObj.results) {
             let xmlhttp = new XMLHttpRequest();
             xmlhttp.open("POST", this.salesAssistAPI);
             xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log(this.responseText);
+                    let response = JSON.parse(this.responseText).response
+                    if (response != null){
+                        UIManager.changeElement(
+                            self.uiElement,
+                            responseObj.results[0].alternatives[0].transcript,
+                            response
+                            )
+                    }
+                    
 
                 } else if (this.readyState == 4) {
                     console.log(this.responseText);
@@ -298,11 +310,22 @@ class Assist {
             let userMute = document.querySelector("div.I5fjHe.wb61gb")
             let meetingID = window.location.pathname.toString().match(/[\w]+-[\w]+-[\w]+/)[0]
             if (audioCustomer && userMute) {
-                this.customerRecorder = new Recorder(document.getElementsByTagName('audio')[0].srcObject, this.options, "GOOGLER", meetingID);
+                this.uiManager = new UIManager()
+                this.customerRecorder = new Recorder(
+                    document.getElementsByTagName('audio')[0].srcObject, 
+                    this.options, "CUSTOMER", 
+                    meetingID,
+                    this.uiManager);
                 this.userStream = await Assist.getMedia({
                     audio: true
                 });
-                this.userRecorder = new UserRecorder(userMute.parentNode, this.userStream, this.options, "CUSTOMER", meetingID);
+                this.userRecorder = new UserRecorder(
+                    userMute.parentNode, 
+                    this.userStream, 
+                    this.options, 
+                    "GOOGLER", 
+                    meetingID,
+                    this.uiManager);
 
                 this.customerRecorder.start();
                 this.userRecorder.start();
@@ -310,6 +333,96 @@ class Assist {
             };
             await Assist.__delay__(1000); // prevents app from hanging
         }
+    }
+}
+
+class UIManager {
+    constructor(){
+        this.dialog = document.createElement("div")
+        this.dialog.style = "position: absolute; max-width: 512px; max-height: 500px; left: 16px; top: 200px; overflow: scroll;"
+        this.dialog.className = "TZFSLb U9X0yc O3KK7 qjTEB"
+        this.dialog.innerHTML = "<h1 style='margin-left:10px;'>Sales Assist</h1>"
+        document.body.appendChild(this.dialog)
+    }
+    newSource(speaker){
+        var element = document.createElement("div")
+        element.style = "margin-left: 20px;"
+        element.innerHTML = `
+        <h2>${speaker}</h1>
+        <h3>Phrase</h2>
+        <div class="phrase"></div>
+        <div class="response">
+        <h3>Responses</h2>
+        <table class=responseTable></table>
+        </div>
+        `
+        this.dialog.appendChild(element)
+        return element
+    }
+
+    removeSource(element) {
+        this.dialog.removeChild(element)
+    }
+
+    static changeElement(element, phrase, response){
+        if(element != null){
+            if(phrase != null){
+                let phraseDiv = element.querySelector("div.phrase")
+                phraseDiv.innerHTML = '"'+phrase+'"'
+            }
+            let respTable = element.querySelector("table")
+            respTable.innerHTML = ""
+            response.forEach(resp => {
+                respTable.appendChild(UIManager.createResponseRow(resp))
+            })
+        }
+    }
+
+    static createResponseRow(response){
+        let responseContent = UIManager.linkify(response.content)
+        let responseList = responseContent.split("\n\n>")
+        let responseEl = document.createElement("td")
+        let responseSummaryEl = document.createElement("details")
+        responseSummaryEl.innerHTML = `<summary class="responseTitle">${response.title}</summary>`
+        responseList.forEach(el => {
+            let elList = el.split("\n")
+
+            if (elList.length > 1) {
+
+
+                let elEl = document.createElement("details")
+                let elListFirst = elList.shift()
+                elEl.innerHTML = `
+                <summary class="responseSubTitle">${elListFirst}</summary>
+                ${elList.join("<br>")}`
+                responseSummaryEl.appendChild(elEl)
+            }
+            else {
+                responseSummaryEl.innerHTML+=`<b>${elList[0]}</b>`
+            }
+        })
+        responseEl.appendChild(responseSummaryEl)
+        let rowEl = document.createElement("tr")
+        rowEl.appendChild(responseEl)
+        return rowEl
+    }
+
+    static linkify(inputText) {
+        var replacedText, replacePattern1, replacePattern2, replacePattern3;
+    
+        //URLs starting with http://, https://, or ftp://
+        replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+        replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+    
+        //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+        replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+        replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+    
+        //Change email addresses to mailto:: links.
+        replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+        replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
+    
+        return replacedText;
     }
 }
 
