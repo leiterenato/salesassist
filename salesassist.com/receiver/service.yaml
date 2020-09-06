@@ -13,7 +13,7 @@ spec:
       annotations:
         autoscaling.knative.dev/maxScale: '20'
         run.googleapis.com/client-name: cloud-console
-      name: receiver-00002-len
+      name: receiver-00004-len
     spec:
       containerConcurrency: 80
       containers:

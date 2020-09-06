@@ -254,6 +254,18 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 }
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Max-Age", "3600")
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	var p Payload
 	var resp Responses
 	var h History
@@ -287,9 +299,6 @@ func payloadCreate(w http.ResponseWriter, r *http.Request) {
 	// Publish Message to Pubsub
 	publish(histBytes)
 
-	// Enable CORS
-	enableCors(&w)
-
 	// Return Response with match intents
 	fmt.Fprintf(w, string(respBytes))
 }
@@ -312,10 +321,6 @@ func publish(msg []byte) error {
 	return nil
 }
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
-
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -324,7 +329,7 @@ func main() {
 
 	r := mux.NewRouter()
 	api := r.PathPrefix("/receiver/v1").Subrouter()
-	api.HandleFunc("", payloadCreate).Methods(http.MethodPost)
+	api.HandleFunc("", payloadCreate).Methods(http.MethodPost, http.MethodOptions)
 
 	log.Printf("Starting server on port: %s ...", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%s", port), r)
