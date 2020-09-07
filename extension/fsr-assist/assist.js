@@ -191,7 +191,6 @@ class Recorder {
             if(res.split("A").length < 370000){
             xmlhttp.send(JSON.stringify({
                 "config": {
-                    "sampleRateHertz": 48000,
                     "encoding": "LINEAR16",
                     "languageCode": "pt-BR",
                     "enableAutomaticPunctuation": false,
