@@ -340,8 +340,21 @@ class UIManager {
     constructor(){
         this.dialog = document.createElement("div")
         this.dialog.style = "position: absolute; max-width: 512px; max-height: 500px; left: 16px; top: 200px; overflow: scroll;"
-        this.dialog.className = "TZFSLb U9X0yc O3KK7 qjTEB"
-        this.dialog.innerHTML = "<h1 style='margin-left:10px;'>Sales Assist</h1>"
+        this.dialog.className = "TZFSLb O3KK7 qjTEB"
+        let img = document.createElement("img")
+        img.style = "margin-left:10px; margin-top: 10px; height: 32px;width: 32px; float: left;"
+        img.src = chrome.runtime.getURL("images/sales_assist_32.png")
+        img.addEventListener("click", UIManager.changeVisibility)
+        let dialogTitle = document.createElement("h1")
+        dialogTitle.innerHTML = "Sales Assist v0.1.0"
+        dialogTitle.style = "float:right;"
+        dialogTitle.className = "dialogTitle"
+        dialogTitle.addEventListener("click", UIManager.changeVisibility)
+        this.dialog.appendChild(img)
+        this.dialog.appendChild(dialogTitle)
+        let dialogContent = document.createElement("div")
+        dialogContent.className = "dialogContent"
+        this.dialog.appendChild(dialogContent)
         document.body.appendChild(this.dialog)
     }
     newSource(speaker){
@@ -356,7 +369,7 @@ class UIManager {
         <table class=responseTable></table>
         </div>
         `
-        this.dialog.appendChild(element)
+        this.dialog.querySelector("div.dialogContent").appendChild(element)
         return element
     }
 
@@ -423,6 +436,17 @@ class UIManager {
         replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
     
         return replacedText;
+    }
+
+    static changeVisibility(){
+        let x = this.parentElement.querySelector("div.dialogContent")
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            this.parentElement.querySelector("h1.dialogTitle").style.display = "block";
+          } else {
+            x.style.display = "none";
+            this.parentElement.querySelector("h1.dialogTitle").style.display = "none";
+          }
     }
 }
 
