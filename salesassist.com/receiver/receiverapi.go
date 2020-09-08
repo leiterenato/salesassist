@@ -93,7 +93,7 @@ func (e *Entities) loadDictFromFile(filePath string) {
 
 }
 
-func detectIntentText(intents map[string]string) map[string]string {
+func detectIntentText(intents map[string][]string) map[string]string {
 	intentResponse := make(map[string]string)
 
 	sessionPath := fmt.Sprintf("projects/%s/agent/sessions/%s", projectIDassist, sessionID)
@@ -112,7 +112,7 @@ func detectIntentText(intents map[string]string) map[string]string {
 		queryResult := response.GetQueryResult()
 		fulfillmentText := queryResult.GetFulfillmentText()
 
-		intentResponse[key] = fulfillmentText
+		intentResponse[intents[key][1]] = fulfillmentText
 	}
 
 	return intentResponse
@@ -195,15 +195,16 @@ type Payload struct {
 	End        string `json:"end"`
 }
 
-func (p *Payload) findSynonyms(entities Entities) map[string]string {
+func (p *Payload) findSynonyms(entities Entities) map[string][]string {
 
-	match := make(map[string]string)
+	match := make(map[string][]string)
 
 	for _, entity := range entities.Entities {
 		for _, synonym := range entity.Synonyms {
 			isMatchSynonym, _ := regexp.MatchString(synonym, p.Transcript)
 			if isMatchSynonym {
-				match[entity.VisibleTitle] = synonym
+				match[entity.Entity] = append(match[entity.Entity], synonym)
+				match[entity.Entity] = append(match[entity.Entity], entity.VisibleTitle)
 				break
 			}
 		}
@@ -256,7 +257,7 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
 
-	// CORS config
+	// CORS
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST")
