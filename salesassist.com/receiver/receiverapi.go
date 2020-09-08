@@ -70,8 +70,9 @@ type Entities struct {
 
 // EntitySynonyms key:value pair
 type EntitySynonyms struct {
-	Entity   string   `json:"entity"`
-	Synonyms []string `json:"synonyms"`
+	Entity       string   `json:"entity"`
+	Synonyms     []string `json:"synonyms"`
+	VisibleTitle string   `json:"visible_title"`
 }
 
 func (e *Entities) loadDictFromFile(filePath string) {
@@ -202,7 +203,7 @@ func (p *Payload) findSynonyms(entities Entities) map[string]string {
 		for _, synonym := range entity.Synonyms {
 			isMatchSynonym, _ := regexp.MatchString(synonym, p.Transcript)
 			if isMatchSynonym {
-				match[entity.Entity] = synonym
+				match[entity.VisibleTitle] = synonym
 				break
 			}
 		}
@@ -255,6 +256,7 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
 
+	// CORS config
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST")

@@ -2,47 +2,58 @@
     "entities": [
         {
             "entity":"ai_mldiscovery",
-            "synonyms":["machine learning","inteligência artificial","data science"]
+            "synonyms":["machine learning","inteligência artificial","data science"],
+            "visible_title":"Machine Learning Discovery"
         }, 
         {
             "entity":"ai_ccai", 
-            "synonyms":["contact center","atendimento ao cliente","voice bot"]
+            "synonyms":["contact center","atendimento ao cliente","voice bot"],
+            "visible_title":"Contact Center AI (CCAI)"
         },
         {
             "entity":"ai_dialogflow", 
-            "synonyms":["chatbot", "assistente", "dialogflow"]
+            "synonyms":["chatbot", "assistente", "dialogflow", "bot"],
+            "visible_title":"Dialogflow"
         },
         {
             "entity":"ai_documentai", 
-            "synonyms":["documentos", "formulários", "invoice", "ocr documentos"]
+            "synonyms":["documentos", "formulários", "invoice", "ocr documentos"],
+            "visible_title":"Document AI"
         },
         {
             "entity":"ai_naturallanguage", 
-            "synonyms":["tradução", "linguagem", "sentimento", "entidade", "translate"]
+            "synonyms":["tradução", "linguagem", "sentimento", "entidade", "translate"],
+            "visible_title":"Natural Language"
         },
         {
             "entity":"ai_mlops", 
-            "synonyms":["mlops", "produção", "operações"]
+            "synonyms":["mlops", "produção", "operações"],
+            "visible_title":"MLOps"
         },
         {
             "entity":"ai_notebookspipeline", 
-            "synonyms":["jupyter", "notebook", "pipelines", "kubeflow"]
+            "synonyms":["jupyter", "notebook", "pipelines", "kubeflow"],
+            "visible_title":"AI Notebooks and Pipelines"
         },
         {
             "entity":"ai_speech", 
-            "synonyms":["transcrição", "sintetização", "áudio para texto", "texto para áudio", "áudio"]
+            "synonyms":["transcrição", "sintetização", "áudio para texto", "texto para áudio", "áudio"],
+            "visible_title":"STT and TTS"
         },
         {
             "entity":"ai_vision", 
-            "synonyms":["ocr",	"image", "video", "detecção de objetos"]
+            "synonyms":["ocr",	"imagem", "video", "detecção de objetos"],
+            "visible_title":"ML for Vision"
         },
         {
             "entity":"ai_structured", 
-            "synonyms":["estruturados", "regressão", "recomendação"]
+            "synonyms":["estruturados", "regressão", "recomendação"],
+            "visible_title":"ML for Structured / Tabular data"
         },
         {
             "entity":"ai_trainingserving", 
-            "synonyms":["gpu", "tpu", "servir modelo", "treinar modelo", "tensorflow"]
+            "synonyms":["gpu", "tpu", "servir modelo", "treinar modelo", "tensorflow"],
+            "visible_title":"Model Training and Serving on GCP"
         }
     ]
 }
