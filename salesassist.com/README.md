@@ -21,3 +21,13 @@
     [{"title":"",
       "content":""}]
 }
+
+
+# API 1
+ - Receber Hexa e salvar UUID: email, no firebase.
+ - Chave do documento UUID e conteúdo é o email
+ - Creation time
+  - POST
+
+ # API 2
+ - Gerar relatório 

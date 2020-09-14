@@ -44,17 +44,17 @@ python batch_storage.py \
   --temp_location gs://salesassist-history/tmp/ 
 
 ### Payload (tests)
-    # test = [
-    #     b'{"meetingid":"aaa-bbb-ccc", "transcription":"oi", "timestamp_transcription":"2020-08-24 12:44:31.744957 UTC"}',
-    #     b'{"meetingid":"aaa-bbb-ccc", "transcription":"oi", "timestamp_transcription":"2020-08-24 12:44:31.744957 UTC"}',
-    #     b'{"meetingid":"aaa-bbb-ccc", "transcription":"oi"}',
-    #     b'{meetingid":"aaa-bbb-ccc", "transcription":"oi", "timestamp_transcription":"2020-08-24 12:44:31.744957 UTC"}'
-    # ]
+{"uid":"bbbbbbb", "meetingID":"xxx-xxxx-xxx", "speaker": "GOOGLER", "transcript": "machine learning", "start": "2020-09-04 13:45:00", "end": "2020-08-22 13:45:00"}
 
 
 ### BigQuery Schema
 
 [
+    {
+        "name": "uid",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
     {
         "name": "meetingid",
         "type": "STRING",

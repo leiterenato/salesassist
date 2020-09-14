@@ -188,6 +188,7 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 
 // Payload of the JSON structure
 type Payload struct {
+	UID        string `json:"uid"`
 	MeetingID  string `json:"meetingid"`
 	Speaker    string `json:"speaker"`
 	Transcript string `json:"transcript"`
@@ -232,6 +233,7 @@ func (resp *Responses) buildResponseContent(intentResponses map[string]string) {
 
 // History to be published
 type History struct {
+	UID        string            `json:"uid"`
 	MeetingID  string            `json:"meetingid"`
 	Speaker    string            `json:"speaker"`
 	Transcript string            `json:"transcript"`
@@ -241,6 +243,7 @@ type History struct {
 }
 
 func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
+	hist.UID = p.UID
 	hist.MeetingID = p.MeetingID
 	hist.Speaker = p.Speaker
 	hist.Transcript = p.Transcript
@@ -257,7 +260,7 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 
 func payloadCreate(w http.ResponseWriter, r *http.Request) {
 
-	// CORS
+	// Setup CORS
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST")

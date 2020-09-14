@@ -52,6 +52,7 @@ def run_pipeline(known_args, pipeline_args):
 class TablesProperties:
     table_schema = {
         'fields': [
+            {'name': 'uid', 'type': 'STRING', 'mode': 'REQUIRED'},
             {'name': 'meetingid', 'type': 'STRING', 'mode': 'REQUIRED'},
             {'name': 'speaker', 'type': 'STRING', 'mode': 'REQUIRED'},
             {'name': 'transcript', 'type': 'STRING', 'mode': 'REQUIRED'},
