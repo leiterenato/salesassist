@@ -6,9 +6,6 @@ import re
 import apache_beam as beam
 
 
-# [TODO] 
-# - Use timepartitioning to write to BQ
-
 def run_pipeline(known_args, pipeline_args):
     # Define and run pipeline
     with beam.Pipeline(argv=pipeline_args) as p:
