@@ -1,4 +1,6 @@
-# Steps to Execute Dataflow Streaming (Bigquery)
+# Steps to Execute Dataflow Streaming 
+
+### Streaming to Bigquery
 python streaming_bigquery.py \
   --runner DataflowRunner \
   --project cool-ml-demos \
@@ -9,15 +11,10 @@ python streaming_bigquery.py \
   --output_bigquery "cool-ml-demos:salesassist.history" \
   --output_error_bigquery "cool-ml-demos:salesassist.history_error"
 
-
-# Steps to Execute Dataflow Streaming (Firebase)
-python streaming_bigquery.py \
-  --runner DataflowRunner \
-  --project cool-ml-demos \
-  --region us-east1 \
-  --streaming \
-  --temp_location gs://salesassist-history/tmp/
-
+### Streaming toFirebase
+python streaming_firestore.py \
+--streaming \
+--requirements_file requirements.txt
 
 ### Local Streaming (PubSub to BigQuery)
 python test_JSONParse_streaming_bigquery.py \
