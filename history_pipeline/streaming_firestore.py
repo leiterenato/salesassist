@@ -84,7 +84,8 @@ class InsertFirestore(beam.DoFn):
             self.subcol_ref = self.doc_ref.collection('meetings')
             # Set Meeting Document and insert element
             self.subdoc_ref = self.subcol_ref.document(element['meetingid'])
-            self.subdoc_ref.set(element)
+            self.interactions_col_ref = self.subdoc_ref.collection('interactions').document()
+            self.interactions_col_ref.set(element)
         except KeyError as e:
             if 'meetingid' in element:
                 meeting = element['meetingid']
