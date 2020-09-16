@@ -26,7 +26,10 @@ def start_batch_dataflow(event, context):
         projectId=project,
         gcsPath=template,
         body={
-            'jobName': job
+            'jobName': job,
+            'environment': {
+                'workerZone': 'us-east1-c'
+            }
         }
     )
 

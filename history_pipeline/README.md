@@ -31,7 +31,7 @@ python batch_storage.py \
 
 ### Create Cloud Scheduler
  - Point to Topic in PubSub: projects/cool-ml-demos/topics/sales-assist-batch-scheduler
- - cron: 0 12 * * 0 (every sunday at noon)
+ - cron: 0 12 * * 0 (every Sunday at noon)
 
 ### Create Dataflow Template
 python -m batch_storage \
