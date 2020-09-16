@@ -12,6 +12,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/golang/gddo/httputil/header"
@@ -247,8 +248,19 @@ func (hist *History) buildHistoryContent(p *Payload, resp *Responses) {
 	hist.MeetingID = p.MeetingID
 	hist.Speaker = p.Speaker
 	hist.Transcript = p.Transcript
-	hist.Start = p.Start
-	hist.End = p.End
+
+	if p.Start == "" {
+		hist.Start = time.Now().Format("2006-01-02T15:04:05")
+	} else {
+		hist.Start = p.Start
+	}
+
+	if p.End == "" {
+		hist.End = time.Now().Format("2006-01-02T15:04:05")
+	} else {
+		hist.End = p.End
+	}
+
 	hist.Responses = resp.Responses
 
 	if len(resp.Responses) > 0 {

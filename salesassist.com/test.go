@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"time"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
@@ -159,10 +160,15 @@ func main() {
 	// renato, _ := json.Marshal(h)
 	// fmt.Println(string(renato))
 
-	var resp Responses
-	resp.Responses = append(resp.Responses, ResponseContent{Title: "", Content: ""})
-	resp.Responses = append(resp.Responses, ResponseContent{Title: "", Content: ""})
-	resp.Responses = nil
-	fmt.Println(resp)
-	fmt.Printf("len=%d", len(resp.Responses))
+	// var resp Responses
+	// resp.Responses = append(resp.Responses, ResponseContent{Title: "", Content: ""})
+	// resp.Responses = append(resp.Responses, ResponseContent{Title: "", Content: ""})
+	// resp.Responses = nil
+	// fmt.Println(resp)
+	// fmt.Printf("len=%d", len(resp.Responses))
+
+	t := time.Now()
+	renato := t.Format("2006-01-02T15:04:05")
+	fmt.Println(renato)
+	// fmt.Println(time.Now().Format(time.RFC3339))
 }
