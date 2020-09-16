@@ -1,6 +1,5 @@
-# Steps to Execute Dataflow Streaming 
-
-### Streaming to Bigquery
+# Dataflow Streaming
+### Bigquery (long-term history)
 python streaming_bigquery.py \
   --runner DataflowRunner \
   --project cool-ml-demos \
@@ -11,7 +10,7 @@ python streaming_bigquery.py \
   --output_bigquery "cool-ml-demos:salesassist.history" \
   --output_error_bigquery "cool-ml-demos:salesassist.history_error"
 
-### Streaming toFirebase
+### Firebase (short-term history)
 python streaming_firestore.py \
 --streaming \
 --requirements_file requirements.txt
@@ -21,8 +20,7 @@ python test_JSONParse_streaming_bigquery.py \
   --streaming \
   --temp_location gs://salesassist-history/tmp/
 
-# Steps to execute Dataflow Batch
-
+# Dataflow Batch (storage)
 ### Create dataflow template
 python batch_storage.py \
     --runner DataflowRunner \
@@ -53,9 +51,7 @@ python batch_storage.py \
 ### Payload (tests)
 {"uid":"bbbbbbb", "meetingID":"xxx-xxxx-xxx", "speaker": "GOOGLER", "transcript": "machine learning", "start": "2020-09-04 13:45:00", "end": "2020-08-22 13:45:00"}
 
-
 ### BigQuery Schema
-
 [
     {
         "name": "uid",
