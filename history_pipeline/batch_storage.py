@@ -13,7 +13,7 @@ from apache_beam.options.pipeline_options import StandardOptions
 from apache_beam.options.pipeline_options import GoogleCloudOptions
 
 
-def run(argv=None, save_main_session=True):
+def run():
     pipeline_options = PipelineOptions()
     pipeline_options.view_as(StandardOptions).runner = 'DataflowRunner'
     pipeline_options.view_as(SetupOptions).save_main_session = True

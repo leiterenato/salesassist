@@ -6,13 +6,28 @@ import re
 import apache_beam as beam
 from google.cloud import firestore
 
+from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.options.pipeline_options import SetupOptions
+from apache_beam.options.pipeline_options import StandardOptions
+from apache_beam.options.pipeline_options import GoogleCloudOptions
 
-def run_pipeline(known_args, pipeline_args):
-    with beam.Pipeline(argv=pipeline_args) as p:
+
+def run_pipeline():
+    pipeline_options = PipelineOptions()
+    pipeline_options.view_as(StandardOptions).runner = 'DataflowRunner'
+    pipeline_options.view_as(SetupOptions).save_main_session = True
+
+    pipeline_options.view_as(GoogleCloudOptions).project = 'cool-ml-demos'
+    pipeline_options.view_as(GoogleCloudOptions).temp_location = 'gs://salesassist-history/tmp/'
+    pipeline_options.view_as(GoogleCloudOptions).region = 'us-east1'
+
+    input_subscription = 'projects/cool-ml-demos/subscriptions/sales-assist-firestore'
+
+    with beam.Pipeline(options=pipeline_options) as p:
         messages = (
             p
             | 'Read from PubSub' >> 
-                beam.io.ReadFromPubSub(subscription=known_args.input_subscription)
+                beam.io.ReadFromPubSub(subscription=input_subscription)
                     .with_output_types(bytes)
             | 'ParseJson' >> beam.ParDo(ParseJson())
                     .with_outputs('json_decode_error', main='cleared_json'))
@@ -126,13 +141,4 @@ class InsertErrorFirestore(beam.DoFn):
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
-
-    parser = argparse.ArgumentParser(prog='Assist Streaming for Firebase')
-    parser.add_argument(
-        '--input_subscription',
-        dest='input_subscription',
-        default='projects/cool-ml-demos/subscriptions/sales-assist-firestore',
-        help='Input subscription')
-
-    known_args, pipeline_args = parser.parse_known_args(None)
-    run_pipeline(known_args, pipeline_args)
+    run_pipeline()
