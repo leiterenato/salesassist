@@ -31,17 +31,18 @@ python batch_storage.py \
 
 ### Create Cloud Scheduler
  - Point to Topic in PubSub: projects/cool-ml-demos/topics/sales-assist-batch-scheduler
+ - cron: 0 12 * * 0 (every sunday at noon)
+
+### Create Dataflow Template
+python -m batch_storage \
+    --project cool-ml-demos \
+    --staging_location gs://salesassist-history/staging \
+    --temp_location gs://salesassist-history/tmp \
+    --template_location gs://salesassist-history/templates/batch-template
 
 ### Create Cloud Function
  - Trigger by PubSub
  - Paste Func in inline editor
-
-python batch_storage.py \
-  --project cool-ml-demos \
-  --runner DataflowRunner \
-  --region us-east1 \
-  --save_main_session True \
-  --temp_location gs://salesassist-history/tmp/ 
 
 ### Local Batch (BigQuery to GCS)
 python batch_storage.py \

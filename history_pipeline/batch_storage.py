@@ -24,14 +24,14 @@ def run():
 
     query = 'SELECT * FROM `cool-ml-demos.salesassist.history` '\
             'WHERE EXTRACT(DATE FROM start) > '\
-            'EXTRACT(DATE FROM TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY))'
+            'EXTRACT(DATE FROM TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY))'
 
     with beam.Pipeline(options=pipeline_options) as p:
         messages = (
             p
              | 'Read from Bigquery' >> beam.io.Read(beam.io.BigQuerySource(
                                             query = query, use_standard_sql=True))
-             | 'Get Key' >> beam.Map(lambda elem: (elem['meetingid'], elem))
+             | 'Get Key' >> beam.Map(lambda elem: (elem['uid'] + '-' + elem['meetingid'], elem))
              | 'Group by MeetingID' >> beam.GroupByKey()
              | 'Write to Bucket' >> fileio.WriteToFiles(
                                         path='gs://salesassist-history',
@@ -49,9 +49,9 @@ class JsonSink(fileio.TextSink):
 
 
 def payload_naming(*args):
-    d1 = datetime.date.today() - datetime.timedelta(days=1)
+    d1 = datetime.date.today()
     d1 = d1.strftime('%Y-%m-%d')
-    return '{}/{}.json'.format(d1, args[5])
+    return 'archive/{}/{}.json'.format(d1, args[5])
 
 
 if __name__ == '__main__':
