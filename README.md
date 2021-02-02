@@ -61,5 +61,5 @@ After the audio is transcribed to text, we will search for words from our dictio
 <img src="https://drive.google.com/uc?export=view&id=1k9Lp8924GEQ8cfW_vRL2MzI7-BB3bpHu" width="70%">
 
 Speech API with authentication:
-[1] [An architecture for production-ready live audio transcription using Speech-to-Text](https://cloud.google.com/solutions/media-entertainment/architecture-for-production-ready-live-transcription-using-speech-to-text)
+[1] [An architecture for production-ready live audio transcription using Speech-to-Text](https://cloud.google.com/solutions/media-entertainment/architecture-for-production-ready-live-transcription-using-speech-to-text)  
 [2] [Implementing production-ready live audio transcription using Speech-to-Text (Tutorial)](https://cloud.google.com/solutions/media-entertainment/architecture-for-production-ready-live-transcription-tutorial)
